@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pso;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,14 +8,8 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 
-/**
- *
- * @author y
- */
+/** @author y */
 public class PSO {
     private  double w = 1.0;
     private final double C1 = 2.0;
@@ -29,7 +18,6 @@ public class PSO {
     
     private final int PARTICLE_SIZE = 20;
     private final long SEED = 654321;
-    private final int DEPTH = 1;
     private final int MAX_ITERATION = 200;
     private final int PROBLEM = 1;
     private static final double P = Math.PI;
@@ -39,45 +27,18 @@ public class PSO {
     private Random rand;
     private int globalBest;
     
-    private static DefaultCategoryDataset dataset;
-    private static XYSeriesCollection xyDataset;
-    
     public PSO() {
    
-    }
-    
-        /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-                
+    }    
+    public static void main(String[] args) {               
         PSO pso = new PSO();
         pso.run();
-        //System.out.println("fit2: "+pso.fitness2(0.0,0.0) );
-        
-        
-        //System.out.println("fit2 test: "+pso.fit2(pso.randomInterval(-P, P) , -1.0));
-
-/*
-        LineChart_AWT chart1 = new LineChart_AWT("PSO", "Değer","iteration", dataset);       //      fitnes deger için çizgi grafigi
-        chart1.pack( );
-        chart1.setVisible( true );
-
-        XYLineChart_AWT chart = new XYLineChart_AWT("PSO",                                    //    XY düzleminde particle konumlarını gösteren grafik  
-         "PSO", xyDataset);
-        chart.pack( );          
-        RefineryUtilities.centerFrameOnScreen( chart ); 
-        chart.setVisible( true );    
-*/
-
     }
     
     private void run(){
         initialize();
       
         globalBest = 0;
-        
-        dataset = new DefaultCategoryDataset( ); 
         
         PrintWriter out = null;
         try {
@@ -134,22 +95,15 @@ public class PSO {
                         particles.get(i).setpBestY(particles.get(i).getCurrentY());
                     }
                 }
-                dataset.addValue( particles.get(globalBest).getpBestFitness() , "fitness value" , Integer.toString(z));
                 w = 1.0 - (((double) z) / MAX_ITERATION) ;                                                                                                      //reduce w for control V
-                //System.out.println("best fitness @"+z+" : "+globalBest+" "+Math.round(particles.get(globalBest).getpBestFitness()*10000.0)/10000.0+" "+w);
-                //writeFitness(z,particles.get(globalBest).getpBestFitness());
 
                 out.println(z+"\t"+Math.round(particles.get(globalBest).getpBestFitness()*10000.0)/10000.0);
 
                 z++;
             }
-        
-        
         }catch (IOException e) {           System.err.println(e);            }
          finally{            if(out != null){            out.close();            }        } 
             
-            
-        //grafigeAktar();
         writePositions();
        
     }
@@ -178,16 +132,6 @@ public class PSO {
             }
         }catch (IOException e) {           System.err.println(e);            }
          finally{            if(out != null){            out.close();            }        }      
-    }
-        
-    private void grafigeAktar(){
-        XYSeries xySeries = new XYSeries("fitness value");
-        for(int i=0;i<PARTICLE_SIZE;i++){
-            xySeries.add(Math.round(particles.get(i).getCurrentX()*1000.0)/1000.0, Math.round(particles.get(i).getCurrentY()*1000.0)/1000.0);
-            ekranaYazdir1(i);            
-        }
-        xyDataset = new XYSeriesCollection();
-        xyDataset.addSeries(xySeries);
     }
     
     private void ekranaYazdir1(int i){
@@ -238,40 +182,14 @@ public class PSO {
                 +C2*rand.nextDouble()*(particles.get(globalBest).getpBestY() - p.getCurrentY())
                 );
     }
-    /*
-    private double calculateVy(Particle p){
-        rand = new Random();
-        return k*(
-                p.getVy()*w
-                +C1*rand.nextDouble()*( p.getpBestY()-p.getCurrentY() )
-                +C2*rand.nextDouble()*( particles.get(globalBest).getpBestY() - p.getCurrentY() )
-                );
-    }
-    */
+
     private double fitness1(double x,double y){
         return (4-(2.1*x*x)+Math.pow(x,4)/3)*x*x + (x*y) + (-4+4*y*y)*y*y;
     }
     
     private double fitness2( double x, double y){
-        /*
-        double part1 = 0.0;             //problem2  iki parçaya ayrılıp döngüler(toplamlar) 
-        double part2 = 0.0;             //sonrası birleştirilecek(çarpılacak)
-        /*for(int i=0;i<d;i++){
-            part1 = part1 + particles.get(i).get;
-        }
-        for(int i=0;i<d;i++){
-            part2 = part2 + Math.sin(x*x);
-        }
-        
-        part1 = Math.abs(x) +Math.abs(y);
-        part2 = Math.pow(Math.E, -(Math.sin(x*x)+Math.sin(y*y)) );
-        */
         return Math.abs(x) +Math.abs(y)
                 * Math.pow(E, -(Math.sin(x*x)+Math.sin(y*y)) );
-    }
-    
-    private double fit2(double x, double y){
-        return (x+y)*( Math.pow(Math.E, -( Math.sin(x*x)+Math.sin(y*y)) ) );    
     }
     
     private double randomInterval(double low, double high){
